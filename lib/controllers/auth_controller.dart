@@ -29,8 +29,12 @@ class AuthController with ChangeNotifier {
     }else{
       _errorMsg=null;
     }
-    return _user;
     notifyListeners();
+    return _user;
+  }
+  //New Auth
+  Future<void>newAuthForUser(String email,String password)async{
+    _authServices.createNewUser(email, password);
   }
   // Sign out method
   Future<void> signOut() async {

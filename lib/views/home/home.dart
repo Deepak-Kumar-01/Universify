@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:universify/services/firebase_auth_service.dart';
-
+import 'package:universify/views/admin/newUser/newUserRegistration.dart';
+import 'package:universify/views/auth/login/view/loginMediumDevice.dart';
+import 'package:universify/widgets/grid_item.dart';
+import '../../controllers/auth_controller.dart';
 import '../../services/user_secure_storage.dart';
+
 class Home extends StatelessWidget {
   const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthController?>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home"),
+        title:  Text("USER uid: ${authProvider?.user?.email}",style: TextStyle(fontSize: 20),),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: GridView.count(crossAxisCount: 2,children: [
+          GridItem(title: "New User",tileColor: Colors.pink,url:"assets/adminIcons/createAuth.png",navigateTo: NewUserRegistration(),),
+          GridItem(title: "New Session ",tileColor: Colors.orange,url:"assets/images/Java.png",navigateTo: NewUserRegistration(),)
+
+        ],),
       ),
       floatingActionButton: FloatingActionButton(onPressed: ()async{
         final AuthServices _authServices=AuthServices();

@@ -31,7 +31,16 @@ class AuthServices{
       return null;
     }
   }
-
+  //Create new user auth
+  Future<void>createNewUser(String email,String password)async{
+    try{
+      UserCredential userCredential=await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      print("NEW USER: $userCredential");
+    }catch(e){
+      print("createUserWithEmailAndPassword: Failed");
+      return;
+    }
+  }
   // Sign out
   Future<void> signOut() async {
     await _auth.signOut();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../services/user_secure_storage.dart';
+import '../../../wrapper.dart';
 
 class SmallNextButton extends StatelessWidget {
   SmallNextButton({
@@ -48,10 +49,10 @@ class SmallNextButton extends StatelessWidget {
                           );
                         });
                     await UserSecureStorage.setOnboarding("true");
-                    // Navigator.of(context).pushAndRemoveUntil(
-                    //   MaterialPageRoute(builder: (context) =>Wrapper()),
-                    //       (Route<dynamic> route) => false,
-                    // );
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) =>Wrapper()),
+                          (Route<dynamic> route) => false,
+                    );
                   },
                   child: const Text(
                     "Let's Begin",
