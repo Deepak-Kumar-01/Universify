@@ -16,11 +16,11 @@ class _LoginMediumDeviceState extends State<LoginMediumDevice> {
   final TextEditingController _controller1 = TextEditingController();
   final TextEditingController _controller2 = TextEditingController();
   //Accessing UserData From Provider
-  AuthController _authController=AuthController();
+  AuthController _authController = AuthController();
   //show password
-  bool showPass=false;
+  bool showPass = false;
   //remember me checkbox
-  bool isRemember=true;
+  bool isRemember = true;
   //On Success Login Navigate
   Future<void> _loginAndNavigate() async {
     showDialog(
@@ -48,12 +48,11 @@ class _LoginMediumDeviceState extends State<LoginMediumDevice> {
     }
     if (user != null) {
       try {
-        await UserSecureStorage.setUserUID(
-            "${user.uid}");
+        await UserSecureStorage.setUserUID("${user.uid}");
         if (mounted) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => Wrapper()),
-                (Route<dynamic> route) => false,
+            (Route<dynamic> route) => false,
           );
         }
       } catch (e) {
@@ -68,8 +67,7 @@ class _LoginMediumDeviceState extends State<LoginMediumDevice> {
           );
         }
       }
-    }
-    else{
+    } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -82,6 +80,7 @@ class _LoginMediumDeviceState extends State<LoginMediumDevice> {
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -157,15 +156,17 @@ class _LoginMediumDeviceState extends State<LoginMediumDevice> {
                     child: TextField(
                         controller: _controller2,
                         obscureText: !showPass,
-                        decoration:  InputDecoration(
+                        decoration: InputDecoration(
                           prefixIcon: Icon(Icons.password_sharp),
                           suffixIcon: InkWell(
-                            onTap: (){
-                              setState(() {
-                                showPass= !showPass;
-                              });
-                            },
-                              child: showPass?Icon(Icons.visibility):Icon(Icons.visibility_off)),
+                              onTap: () {
+                                setState(() {
+                                  showPass = !showPass;
+                                });
+                              },
+                              child: showPass
+                                  ? Icon(Icons.visibility)
+                                  : Icon(Icons.visibility_off)),
                           border: OutlineInputBorder(),
                           label: Text("Password"),
                           hintText: "",
@@ -185,15 +186,14 @@ class _LoginMediumDeviceState extends State<LoginMediumDevice> {
                           onPressed: _loginAndNavigate,
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue[900],
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
                               padding: EdgeInsets.all(12),
-                              minimumSize: Size(size.width*0.6, 60)
-                          ),
+                              minimumSize: Size(size.width * 0.6, 60)),
                           child: const Text(
                             "Log in",
                             style: TextStyle(color: Colors.white, fontSize: 22),
-                          )
-                      )),
+                          ))),
                   //Buttons
                   const SizedBox(
                     height: 10,

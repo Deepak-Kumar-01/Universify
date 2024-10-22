@@ -40,10 +40,8 @@ class _NewUserRegistrationState extends State<NewUserRegistration> {
 
               child: ElevatedButton(
                   onPressed: ()async{
-                    // AuthController _auth=AuthController();
-                    // await _auth.newAuthForUser(_controller1.text, _controller2.text);
-                    FirebaseAuth firebaseAuth=FirebaseAuth.instance;
-                    await firebaseAuth.createUserWithEmailAndPassword(email: "a@gmail.com", password: "123456");
+                    
+
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue[900],
