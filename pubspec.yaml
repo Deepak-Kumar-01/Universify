@@ -37,6 +37,11 @@ dependencies:
   cupertino_icons: ^1.0.6
   flutter_dotenv: ^5.2.1
   firebase_core: ^3.4.0
+  firebase_storage: ^12.2.0
+  firebase_auth: ^5.2.0
+  flutter_secure_storage: ^9.2.2
+  provider: ^6.1.2
+  flutter_native_splash: ^2.4.0
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +68,29 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - .env
+    - assets/images/lazyPanda.jpg
+    - assets/images/home.png
+    - assets/images/tablecalendar.png
+    - assets/images/user.png
+    - assets/images/dbms.png
+    - assets/images/os.png
+    - assets/images/autmata.png
+    - assets/images/Java.png
+    - assets/images/carousel/
+    - assets/images/carousel/book.jpeg
+    - assets/images/carousel/coding.jpg
+    - assets/images/bg.jpg
+    - assets/onboarding_gifs/excited.gif
+    - assets/onboarding_gifs/code.gif
+    - assets/onboarding_gifs/peace.gif
+    - assets/onboarding_gifs/welcome.gif
+    - assets/onboarding_gifs/study.gif
+    - assets/onboarding_gifs/event_notifications.gif
+    - assets/logo/logo_2x.png
+    - assets/logo/logo_1x.png
+    - assets/logo/appLogo.png
+    - assets/logo/appLogo2x.png
+    - assets/logo/appLogoWhite2x.png
 #  assets:
 #     - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
