@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:universify/services/firebase_auth_service.dart';
 import 'package:universify/views/admin/newSession/newSession.dart';
 import 'package:universify/views/admin/newUser/newUserRegistration.dart';
 import 'package:universify/views/auth/login/view/loginMediumDevice.dart';
+import 'package:universify/views/events/collegeEvents.dart';
 import 'package:universify/widgets/grid_item.dart';
 import '../../controllers/auth_controller.dart';
 import '../../services/user_secure_storage.dart';
@@ -22,7 +24,9 @@ class Home extends StatelessWidget {
         padding: EdgeInsets.all(16),
         child: GridView.count(crossAxisCount: 2,children: [
           GridItem(title: "New User",tileColor: Colors.pink,url:"assets/adminIcons/createAuth.png",navigateTo: NewUserRegistration(),),
-          GridItem(title: "New Session ",tileColor: Colors.orange,url:"assets/images/Java.png",navigateTo: NewSession(),)
+          GridItem(title: "New Session ",tileColor: Colors.orange,url:"assets/images/Java.png",navigateTo: NewSession(),),
+          GridItem(title: "New User",tileColor: Colors.grey,url:"assets/adminIcons/createAuth.png",navigateTo: CollegeEvents(),),
+
 
         ],),
       ),
