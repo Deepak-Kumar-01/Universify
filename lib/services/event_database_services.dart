@@ -18,15 +18,31 @@ class EventDatabaseServices {
   }
 
   //Add new event
-  Future<void> addEvent(String title)async{
+  Future<void> addEvent(
+      String title,
+      String department,
+      DateTime dateTime,
+      String contactDetails,
+      String venue,
+      String description,
+      String techTag,
+      String imageUrl,
+      bool isDone) async {
     await eventCollectionReference.add({
-      'title':title,
-      'isDone':false,
-      'createdOn':DateTime.timestamp()
+      'title': title,
+      'department': department,
+      'dateTime': dateTime,
+      'contactDetails': contactDetails,
+      'venue': venue,
+      'description': description,
+      'techTag': techTag,
+      'imageUrl':imageUrl,
+      'isDone':isDone
     });
   }
+
   //Delete Event
-  Future<void> deleteEvent(String id) async{
+  Future<void> deleteEvent(String id) async {
     await eventCollectionReference.doc(id).delete();
   }
 }
