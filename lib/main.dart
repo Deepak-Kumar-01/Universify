@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:universify/controllers/auth_controller.dart';
@@ -19,6 +20,12 @@ void main() async {
   // //To cache data by firebase
   FirebaseFirestore.instance.settings =
       const Settings(persistenceEnabled: true);
+  //calling DOTENV
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    print('Error loading .env file: $e');
+  }
   runApp(MyApp());
 }
 

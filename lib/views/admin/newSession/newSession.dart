@@ -1,12 +1,9 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:universify/controllers/storage_controller.dart';
 import 'package:universify/utils/filePicker_services.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-
-import '../../../widgets/grid_item.dart';
-import '../newUser/newUserRegistration.dart';
 
 class NewSession extends StatefulWidget {
   const NewSession({super.key});
@@ -25,6 +22,7 @@ class _NewSessionState extends State<NewSession> {
   List<String> branchList=["MCA","Btech_CSE","Btech_AI/ML","BPharma"];
   List<String> sectionList=["Sec-A (default)","Sec-B","Sec-C","Sec-D"];
   List<String> semList=["First","Second","Third","Fourth","Fifth","Sixth","Seventh","Eighth"];
+
 
   Future<void> _pickFile(String? param) async{
     FilePickerServices _pickServices=FilePickerServices();
@@ -93,9 +91,10 @@ class _NewSessionState extends State<NewSession> {
                     height: 100,
                     child: InkWell(
                       onTap: () async{
+                        final String? stotagePath=dotenv.env["STORAGE_PATH_Student_Details_Template"];
                         print("Download Routine record clicked");
                         StorageController _controller=StorageController();
-                        String? url=await _controller.downloadTemplate("Templates/Student_Details_Template.xlsx", "Student_Details_Template.xlsx");
+                        String? url=await _controller.downloadTemplate(stotagePath!, "Student_Details_Template.xlsx");
                         if(await canLaunchUrlString(url!)){
                           await launchUrlString(url);
                         }else{
@@ -132,9 +131,10 @@ class _NewSessionState extends State<NewSession> {
                     height: 100,
                     child: InkWell(
                       onTap: () async{
+                        final String? stotagePath=dotenv.env["STORAGE_PATH_Routine_Template"];
                         print("Download Routine record clicked");
                         StorageController _controller=StorageController();
-                        String? url=await _controller.downloadTemplate("Templates/Routine_Template.xlsx", "Routine_Template.xlsx");
+                        String? url=await _controller.downloadTemplate(stotagePath!,"Routine_Template.xlsx");
                         if(await canLaunchUrlString(url!)){
                           await launchUrlString(url);
                         }else{
