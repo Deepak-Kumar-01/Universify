@@ -1,0 +1,3 @@
+#In Services => we write only core logics(only functions).
+#In controller => we decide what parameters are required before we run any services.
+#In view => we display from where controller will be triggered

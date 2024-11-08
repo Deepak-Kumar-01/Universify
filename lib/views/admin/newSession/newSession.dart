@@ -1,5 +1,9 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:universify/controllers/storage_controller.dart';
+import 'package:universify/utils/filePicker_services.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../../widgets/grid_item.dart';
 import '../newUser/newUserRegistration.dart';
@@ -13,6 +17,27 @@ class NewSession extends StatefulWidget {
 
 class _NewSessionState extends State<NewSession> {
   final TextEditingController _branchController = TextEditingController();
+  String? selectedBranch=null;
+  String? selectedSection=null;
+  String? selectedSem=null;
+  String? selectedStudentDocFile=null;
+  String? selectedRoutineDocFile=null;
+  List<String> branchList=["MCA","Btech_CSE","Btech_AI/ML","BPharma"];
+  List<String> sectionList=["Sec-A (default)","Sec-B","Sec-C","Sec-D"];
+  List<String> semList=["First","Second","Third","Fourth","Fifth","Sixth","Seventh","Eighth"];
+
+  Future<void> _pickFile(String? param) async{
+    FilePickerServices _pickServices=FilePickerServices();
+    FilePickerResult? result=await _pickServices.pickFile() as FilePickerResult?;
+    print("Picked File: ${result?.names.first}");
+    setState(() {
+      if(param==selectedStudentDocFile){
+        selectedStudentDocFile=result?.names.first;
+      }else if(param==selectedRoutineDocFile){
+        selectedRoutineDocFile=result?.names.first;
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -67,9 +92,15 @@ class _NewSessionState extends State<NewSession> {
                     width: 120,
                     height: 100,
                     child: InkWell(
-                      onTap: () {
-                        // String url="https://drive.google.com/file/d/1a9ceHKgy5Eh_AYb8eNlZCNxsX8TsIgx-/view?usp=drive_link";
-                        // _launchURL(url);
+                      onTap: () async{
+                        print("Download Routine record clicked");
+                        StorageController _controller=StorageController();
+                        String? url=await _controller.downloadTemplate("Templates/Student_Details_Template.xlsx", "Student_Details_Template.xlsx");
+                        if(await canLaunchUrlString(url!)){
+                          await launchUrlString(url);
+                        }else{
+                          print("can't launch url");
+                        }
                       },
                       child: Card(
                         elevation: 8,
@@ -100,16 +131,22 @@ class _NewSessionState extends State<NewSession> {
                     width: 120,
                     height: 100,
                     child: InkWell(
-                      onTap: () {
-                        // String url="https://drive.google.com/file/d/1a9ceHKgy5Eh_AYb8eNlZCNxsX8TsIgx-/view?usp=drive_link";
-                        // _launchURL(url);
+                      onTap: () async{
+                        print("Download Routine record clicked");
+                        StorageController _controller=StorageController();
+                        String? url=await _controller.downloadTemplate("Templates/Routine_Template.xlsx", "Routine_Template.xlsx");
+                        if(await canLaunchUrlString(url!)){
+                          await launchUrlString(url);
+                        }else{
+                          print("can't launch url");
+                        }
                       },
                       child: Card(
                         elevation: 8,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5)),
                         color: Colors.green[600],
-                        child: Center(
+                        child: const Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
@@ -172,27 +209,45 @@ class _NewSessionState extends State<NewSession> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SizedBox(
-                        width: size.width * 0.4,
-                        child: TextField(
-                            controller: _branchController,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              label: Text("Branch"),
-                              hintText: "",
-                            )),
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        child: DropdownButton<String>(
+                          value: selectedBranch,
+                          hint: Text("Select Branch"), // Displays if selectedBranch is null
+                          onChanged: (String? newVal) {
+                            setState(() {
+                              selectedBranch = newVal; // Updates the selected value
+                              print("Selected Branch: $selectedBranch");
+                            });
+                          },
+                          items: branchList.map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SizedBox(
-                        width: size.width * 0.4,
-                        child: TextField(
-                            controller: _branchController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              label: Text("Section"),
-                              hintText: "",
-                            )),
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        child: DropdownButton<String>(
+                          value: selectedSection,
+                          hint: Text("(default if N.A)"), // Displays if selectedBranch is null
+                          onChanged: (String? newVal) {
+                            setState(() {
+                              selectedSection = newVal; // Updates the selected value
+                              print("Selected Section: $selectedSection");
+                            });
+                          },
+                          items: sectionList.map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
                   ],
@@ -200,14 +255,23 @@ class _NewSessionState extends State<NewSession> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SizedBox(
-                    width: size.width * 0.4,
-                    child: TextField(
-                        controller: _branchController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          label: Text("Semester"),
-                          hintText: " 1-8",
-                        )),
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    child: DropdownButton<String>(
+                      value: selectedSem,
+                      hint: Text("Select Semester"), // Displays if selectedBranch is null
+                      onChanged: (String? newVal) {
+                        setState(() {
+                          selectedSem = newVal; // Updates the selected value
+                          print("Selected Semester: $selectedSem");
+                        });
+                      },
+                      items: semList.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ),
               ],
@@ -247,28 +311,30 @@ class _NewSessionState extends State<NewSession> {
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
                 width: size.width * 0.8,
-                child: TextField(
-                    controller: _branchController,
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.attach_file),
-                      border: OutlineInputBorder(),
-                      label: Text("Upload Student Details"),
-                      hintText: "",
-                    )),
+                child: ListTile(
+                  title: Text(
+                    'Student Records: ${selectedStudentDocFile != null ? selectedStudentDocFile!.split('/').last : 'No File Selected'}',
+                  ),
+                  leading: Icon(Icons.attach_file),
+                  onTap: (){
+                    _pickFile(selectedStudentDocFile);
+                  },
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
                 width: size.width * 0.8,
-                child: TextField(
-                    controller: _branchController,
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.attach_file),
-                      border: OutlineInputBorder(),
-                      label: Text("Upload Student Details"),
-                      hintText: "",
-                    )),
+                child: ListTile(
+                  title: Text(
+                    'Routine Records: ${selectedRoutineDocFile != null ? selectedRoutineDocFile!.split('/').last : 'No File Selected'}',
+                  ),
+                  leading: Icon(Icons.attach_file),
+                  onTap: (){
+                    _pickFile(selectedRoutineDocFile);
+                  },
+                ),
               ),
             ),
             ElevatedButton(onPressed: (){}, child: Text("Submit"))
