@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:universify/controllers/storage_controller.dart';
 import 'package:universify/utils/filePicker_services.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'dart:io';
 
 class NewSession extends StatefulWidget {
   const NewSession({super.key});
@@ -19,6 +20,8 @@ class _NewSessionState extends State<NewSession> {
   String? selectedSem=null;
   String? selectedStudentDocFile=null;
   String? selectedRoutineDocFile=null;
+  late File studentRecordFile;
+  late File routineRecordFile;
   List<String> branchList=["MCA","Btech_CSE","Btech_AI/ML","BPharma"];
   List<String> sectionList=["Sec-A (default)","Sec-B","Sec-C","Sec-D"];
   List<String> semList=["First","Second","Third","Fourth","Fifth","Sixth","Seventh","Eighth"];
@@ -27,12 +30,16 @@ class _NewSessionState extends State<NewSession> {
   Future<void> _pickFile(String? param) async{
     FilePickerServices _pickServices=FilePickerServices();
     FilePickerResult? result=await _pickServices.pickFile() as FilePickerResult?;
-    print("Picked File: ${result?.names.first}");
+    // print("Picked File: ${result?.names.first}");
+    print("Picked File: ${result?.files.single.path}");
+
     setState(() {
       if(param==selectedStudentDocFile){
         selectedStudentDocFile=result?.names.first;
+        studentRecordFile=File(result!.files.single.path!);
       }else if(param==selectedRoutineDocFile){
         selectedRoutineDocFile=result?.names.first;
+        routineRecordFile=File(result!.files.single.path!);
       }
     });
   }
@@ -94,8 +101,9 @@ class _NewSessionState extends State<NewSession> {
                         final String? stotagePath=dotenv.env["STORAGE_PATH_Student_Details_Template"];
                         print("Download Routine record clicked");
                         StorageController _controller=StorageController();
-                        String? url=await _controller.downloadTemplate(stotagePath!, "Student_Details_Template.xlsx");
-                        if(await canLaunchUrlString(url!)){
+                        // String? url=await _controller.downloadTemplate(stotagePath!, "Student_Details_Template.xlsx");
+                        String? url="https://docs.google.com/spreadsheets/d/1UwUyUrR54PHryfs63IIxpfJUdhcOQ_sE/edit?usp=sharing&ouid=104110574911029818653&rtpof=true&sd=true";
+                        if(await canLaunchUrlString(url)){
                           await launchUrlString(url);
                         }else{
                           print("can't launch url");
@@ -316,8 +324,8 @@ class _NewSessionState extends State<NewSession> {
                     'Student Records: ${selectedStudentDocFile != null ? selectedStudentDocFile!.split('/').last : 'No File Selected'}',
                   ),
                   leading: Icon(Icons.attach_file),
-                  onTap: (){
-                    _pickFile(selectedStudentDocFile);
+                  onTap: ()async{
+                    await _pickFile(selectedStudentDocFile);
                   },
                 ),
               ),
@@ -331,16 +339,27 @@ class _NewSessionState extends State<NewSession> {
                     'Routine Records: ${selectedRoutineDocFile != null ? selectedRoutineDocFile!.split('/').last : 'No File Selected'}',
                   ),
                   leading: Icon(Icons.attach_file),
-                  onTap: (){
-                    _pickFile(selectedRoutineDocFile);
+                  onTap: ()async{
+                    await _pickFile(selectedRoutineDocFile);
                   },
                 ),
               ),
             ),
-            ElevatedButton(onPressed: (){}, child: Text("Submit"))
+            ElevatedButton(onPressed: ()async{
+              //Upload doc to storage
+              StorageController storageController=StorageController();
+              String? studentRecordFileName=selectedStudentDocFile!.split('/').last;
+              String? routineRecordFileName=selectedRoutineDocFile!.split('/').last;
+              await storageController.uploadDocument(selectedBranch, selectedSem, selectedSection, studentRecordFileName, studentRecordFile);
+              await storageController.uploadDocument(selectedBranch, selectedSem, selectedSection, routineRecordFileName, routineRecordFile);
+
+              //Convert Excel to firebase Doc and then upload
+              
+            }, child: Text("Submit"))
           ],
         ),
       ),
     );
   }
 }
+

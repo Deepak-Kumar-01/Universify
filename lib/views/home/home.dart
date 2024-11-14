@@ -6,6 +6,7 @@ import 'package:universify/views/admin/newSession/newSession.dart';
 import 'package:universify/views/admin/newUser/newUserRegistration.dart';
 import 'package:universify/views/auth/login/view/loginMediumDevice.dart';
 import 'package:universify/views/events/collegeEvents.dart';
+import 'package:universify/views/handle_Excel.dart';
 import 'package:universify/widgets/grid_item.dart';
 import '../../controllers/auth_controller.dart';
 import '../../services/user_secure_storage.dart';
@@ -26,6 +27,8 @@ class Home extends StatelessWidget {
           GridItem(title: "New User",tileColor: Colors.pink,url:"assets/adminIcons/createAuth.png",navigateTo: NewUserRegistration(),),
           GridItem(title: "New Session ",tileColor: Colors.orange,url:"assets/images/Java.png",navigateTo: NewSession(),),
           GridItem(title: "New User",tileColor: Colors.grey,url:"assets/adminIcons/createAuth.png",navigateTo: CollegeEvents(),),
+          GridItem(title: "Handle Excel",tileColor: Colors.grey,url:"assets/adminIcons/createAuth.png",navigateTo: HandleExcel(),),
+
 
 
         ],),
