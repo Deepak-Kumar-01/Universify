@@ -16,6 +16,7 @@ class DatabaseServices{
         fromFirestore: (snapshots, _) => AppUser.fromJson(snapshots.data()!),
         toFirestore: (appUser, _) => appUser.toJson());
     }
+
   //Adding User data after creating authentication
   Future<void> addUser(AppUser appUser)async{
     var uid=await FirebaseAuth.instance.currentUser?.uid;
@@ -26,32 +27,25 @@ class DatabaseServices{
     await _userDocRef.set(appUser);
   }
 
-  // //Firebase Logic for uploading Timetable
-  // Future<void> createDegreeTimetable(
-  //     String dept, String sem, Map<String, dynamic> timetableData) async {
-  //   // print("TimeTable: ${timetableData}");
-  //   CollectionReference degrees = firestore.collection('degrees');
-  //
-  //   for (String semesterId in timetableData['semesters'].keys) {
-  //     // print("SemesterId: $semesterId");
-  //     await degrees.doc(dept).collection('semesters').doc(semesterId).set({
-  //       'name': timetableData['semesters'][semesterId]['name'],
-  //     });
-  //     for (String dayId
-  //     in timetableData['semesters'][semesterId]['timetable'].keys) {
-  //       await degrees
-  //           .doc(dept)
-  //           .collection('semesters')
-  //           .doc(semesterId)
-  //           .collection('timetable')
-  //           .doc(dayId)
-  //           .set({
-  //         'day': timetableData['semesters'][semesterId]['timetable'][dayId]
-  //         ['day'],
-  //         'slots': timetableData['semesters'][semesterId]['timetable'][dayId]
-  //         ['slots'],
-  //       });
-  //     }
-  //   }
-  // }
-}
+  //Firebase Logic for uploading Timetable
+  Future<void> createDegreeTimetable(
+      String branch,String year,String section,Map<String, dynamic> timetableData) async {
+    print("TimeTable: ${timetableData}");
+    CollectionReference degrees = _firestore.collection('degrees');
+      for (String dayId
+      in timetableData["${year}-Year"][section]['timetable'].keys) {
+        await degrees
+            .doc(branch)
+            .collection("${year}-Year")
+            .doc(section)
+            .collection('timetable')
+            .doc(dayId)
+            .set({
+          'day': timetableData["${year}-Year"][section]['timetable'][dayId]
+          ['day'],
+          'slots': timetableData["${year}-Year"][section]['timetable'][dayId]
+          ['slots'],
+        });
+      }
+    }
+  }

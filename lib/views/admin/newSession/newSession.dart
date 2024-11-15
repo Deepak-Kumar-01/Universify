@@ -2,6 +2,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:universify/controllers/storage_controller.dart';
+import 'package:universify/modals/user_model.dart';
+import 'package:universify/services/firebase_database_service.dart';
+import 'package:universify/utils/excel_file_handler_services.dart';
 import 'package:universify/utils/filePicker_services.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'dart:io';
@@ -23,8 +26,20 @@ class _NewSessionState extends State<NewSession> {
   late File studentRecordFile;
   late File routineRecordFile;
   List<String> branchList=["MCA","Btech_CSE","Btech_AI/ML","BPharma"];
-  List<String> sectionList=["Sec-A (default)","Sec-B","Sec-C","Sec-D"];
+  List<String> sectionList=["Sec-A","Sec-B","Sec-C","Sec-D"];
   List<String> semList=["First","Second","Third","Fourth","Fifth","Sixth","Seventh","Eighth"];
+  String? findYear(String? sem){
+    if(sem=="First" || sem=="Second"){
+      return "First";
+    }else if(sem=="Third" || sem=="Fourth"){
+      return "Second";
+    }else if(sem=="Fifth" || sem=="Sixth"){
+      return "Third";
+    }else if(sem=="Seventh" || sem=="Eighth"){
+      return "Fourth";
+    }
+    return null;
+  }
 
 
   Future<void> _pickFile(String? param) async{
@@ -33,15 +48,17 @@ class _NewSessionState extends State<NewSession> {
     // print("Picked File: ${result?.names.first}");
     print("Picked File: ${result?.files.single.path}");
 
-    setState(() {
-      if(param==selectedStudentDocFile){
+    if(param==selectedStudentDocFile){
+      setState(() {
         selectedStudentDocFile=result?.names.first;
         studentRecordFile=File(result!.files.single.path!);
-      }else if(param==selectedRoutineDocFile){
+      });
+    }else if(param==selectedRoutineDocFile){
+      setState(() {
         selectedRoutineDocFile=result?.names.first;
         routineRecordFile=File(result!.files.single.path!);
-      }
-    });
+      });
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -245,7 +262,7 @@ class _NewSessionState extends State<NewSession> {
                           hint: Text("(default if N.A)"), // Displays if selectedBranch is null
                           onChanged: (String? newVal) {
                             setState(() {
-                              selectedSection = newVal; // Updates the selected value
+                              selectedSection = newVal!; // Updates the selected value
                               print("Selected Section: $selectedSection");
                             });
                           },
@@ -354,7 +371,19 @@ class _NewSessionState extends State<NewSession> {
               await storageController.uploadDocument(selectedBranch, selectedSem, selectedSection, routineRecordFileName, routineRecordFile);
 
               //Convert Excel to firebase Doc and then upload
-              
+              ExcelFileHandlerServices excelHandler=ExcelFileHandlerServices();
+              List<Object> studentObject=await excelHandler.extractUserAuthDetail(studentRecordFile,"users");
+              //add student record firestore database
+              String studentPath=studentObject[0] as String;
+              DatabaseServices studentRef=DatabaseServices(studentPath);
+              studentRef.addUser(studentObject[1] as AppUser);
+              // print(studentPath);
+              String? year=findYear(selectedSem);
+              Map<String, dynamic> routineObject=await excelHandler.extractTimetable(routineRecordFile,year!,selectedSection!);
+              String routinePath="degrees/$selectedBranch/$year/$selectedSection/routine";
+              DatabaseServices _routineRef=DatabaseServices(routinePath);
+              _routineRef.createDegreeTimetable(selectedBranch!,year,selectedSection!,routineObject);
+              // print(routineObject);
             }, child: Text("Submit"))
           ],
         ),
