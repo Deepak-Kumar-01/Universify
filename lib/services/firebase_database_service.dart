@@ -18,8 +18,8 @@ class DatabaseServices{
     }
 
   //Adding User data after creating authentication
-  Future<void> addUser(AppUser appUser)async{
-    var uid=await FirebaseAuth.instance.currentUser?.uid;
+  Future<void> addUser(AppUser appUser,String uid)async{
+    // var uid=await FirebaseAuth.instance.currentUser?.uid;
     _userDocRef = _usersRef.doc(uid).withConverter<AppUser>(
       fromFirestore: (snapshots, _) => AppUser.fromJson(snapshots.data()!),
       toFirestore: (appUser, _) => appUser.toJson(),

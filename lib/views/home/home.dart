@@ -28,9 +28,6 @@ class Home extends StatelessWidget {
           GridItem(title: "New Session ",tileColor: Colors.orange,url:"assets/images/Java.png",navigateTo: NewSession(),),
           GridItem(title: "New User",tileColor: Colors.grey,url:"assets/adminIcons/createAuth.png",navigateTo: CollegeEvents(),),
           GridItem(title: "Handle Excel",tileColor: Colors.grey,url:"assets/adminIcons/createAuth.png",navigateTo: HandleExcel(),),
-
-
-
         ],),
       ),
       floatingActionButton: FloatingActionButton(onPressed: ()async{

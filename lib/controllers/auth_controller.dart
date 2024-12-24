@@ -33,8 +33,9 @@ class AuthController with ChangeNotifier {
     return _user;
   }
   //New Auth
-  Future<void>newAuthForUser(String email,String password)async{
-    _authServices.createNewUser(email, password);
+  Future<String?>newAuthForUser(String email,String password)async{
+    String? uid=await _authServices.createNewUser(email, password);
+    return uid;
   }
   // Sign out method
   Future<void> signOut() async {

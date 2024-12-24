@@ -18,28 +18,29 @@ class AuthServices{
       return null;
     }
   }
-  // Sign up with email and password
-  Future<User?> signUpWithEmail(String email, String password) async {
-    try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return userCredential.user;
-    } catch (e) {
-      print('Error signing up: $e');
-      return null;
-    }
-  }
+  // // Sign up with email and password
+  // Future<User?> signUpWithEmail(String email, String password) async {
+  //   try {
+  //     UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+  //       email: email,
+  //       password: password,
+  //     );
+  //     return userCredential.user;
+  //   } catch (e) {
+  //     print('Error signing up: $e');
+  //     return null;
+  //   }
+  // }
   //Create new user auth
-  Future<void>createNewUser(String email,String password)async{
+  Future<String?>createNewUser(String email,String password)async{
     try{
       UserCredential userCredential=await _auth.createUserWithEmailAndPassword(email: email, password: password);
       print("NEW USER: $userCredential");
+      return userCredential.user?.uid;
     }catch(e){
       print("createUserWithEmailAndPassword: Failed");
-      return;
     }
+    return null;
   }
   // Sign out
   Future<void> signOut() async {

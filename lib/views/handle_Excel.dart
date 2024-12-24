@@ -100,7 +100,7 @@ class _HandleExcelState extends State<HandleExcel> {
           //Add user after creating auth
           path="degrees/${rowMap['Branch'].toString()}/Sem-${rowMap['Semester'].toString()}/Sec-${rowMap['Section'].toString()}/users";
           DatabaseServices _databaseRef=DatabaseServices(path!);
-          await _databaseRef.addUser(appUser);
+          // await _databaseRef.addUser(appUser);
           print("APP USER DATA:-----------------${appUser.toJson()}");
           //   // print(rowMap['dob']);
           // }

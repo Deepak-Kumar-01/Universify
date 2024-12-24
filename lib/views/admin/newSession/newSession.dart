@@ -1,4 +1,5 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:universify/controllers/storage_controller.dart';
@@ -9,6 +10,9 @@ import 'package:universify/utils/filePicker_services.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'dart:io';
 
+import '../../../controllers/auth_controller.dart';
+import '../../../services/user_secure_storage.dart';
+
 class NewSession extends StatefulWidget {
   const NewSession({super.key});
 
@@ -18,48 +22,58 @@ class NewSession extends StatefulWidget {
 
 class _NewSessionState extends State<NewSession> {
   final TextEditingController _branchController = TextEditingController();
-  String? selectedBranch=null;
-  String? selectedSection=null;
-  String? selectedSem=null;
-  String? selectedStudentDocFile=null;
-  String? selectedRoutineDocFile=null;
+  String? selectedBranch = null;
+  String? selectedSection = null;
+  String? selectedSem = null;
+  String? selectedStudentDocFile = null;
+  String? selectedRoutineDocFile = null;
   late File studentRecordFile;
   late File routineRecordFile;
-  List<String> branchList=["MCA","Btech_CSE","Btech_AI/ML","BPharma"];
-  List<String> sectionList=["Sec-A","Sec-B","Sec-C","Sec-D"];
-  List<String> semList=["First","Second","Third","Fourth","Fifth","Sixth","Seventh","Eighth"];
-  String? findYear(String? sem){
-    if(sem=="First" || sem=="Second"){
+  List<String> branchList = ["MCA", "Btech_CSE", "Btech_AI/ML", "BPharma"];
+  List<String> sectionList = ["Sec-A", "Sec-B", "Sec-C", "Sec-D"];
+  List<String> semList = [
+    "First",
+    "Second",
+    "Third",
+    "Fourth",
+    "Fifth",
+    "Sixth",
+    "Seventh",
+    "Eighth"
+  ];
+  String? findYear(String? sem) {
+    if (sem == "First" || sem == "Second") {
       return "First";
-    }else if(sem=="Third" || sem=="Fourth"){
+    } else if (sem == "Third" || sem == "Fourth") {
       return "Second";
-    }else if(sem=="Fifth" || sem=="Sixth"){
+    } else if (sem == "Fifth" || sem == "Sixth") {
       return "Third";
-    }else if(sem=="Seventh" || sem=="Eighth"){
+    } else if (sem == "Seventh" || sem == "Eighth") {
       return "Fourth";
     }
     return null;
   }
 
-
-  Future<void> _pickFile(String? param) async{
-    FilePickerServices _pickServices=FilePickerServices();
-    FilePickerResult? result=await _pickServices.pickFile() as FilePickerResult?;
+  Future<void> _pickFile(String? param) async {
+    FilePickerServices _pickServices = FilePickerServices();
+    FilePickerResult? result =
+        await _pickServices.pickFile() as FilePickerResult?;
     // print("Picked File: ${result?.names.first}");
     print("Picked File: ${result?.files.single.path}");
 
-    if(param==selectedStudentDocFile){
+    if (param == selectedStudentDocFile) {
       setState(() {
-        selectedStudentDocFile=result?.names.first;
-        studentRecordFile=File(result!.files.single.path!);
+        selectedStudentDocFile = result?.names.first;
+        studentRecordFile = File(result!.files.single.path!);
       });
-    }else if(param==selectedRoutineDocFile){
+    } else if (param == selectedRoutineDocFile) {
       setState(() {
-        selectedRoutineDocFile=result?.names.first;
-        routineRecordFile=File(result!.files.single.path!);
+        selectedRoutineDocFile = result?.names.first;
+        routineRecordFile = File(result!.files.single.path!);
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -114,15 +128,17 @@ class _NewSessionState extends State<NewSession> {
                     width: 120,
                     height: 100,
                     child: InkWell(
-                      onTap: () async{
-                        final String? stotagePath=dotenv.env["STORAGE_PATH_Student_Details_Template"];
+                      onTap: () async {
+                        final String? stotagePath =
+                            dotenv.env["STORAGE_PATH_Student_Details_Template"];
                         print("Download Routine record clicked");
-                        StorageController _controller=StorageController();
+                        StorageController _controller = StorageController();
                         // String? url=await _controller.downloadTemplate(stotagePath!, "Student_Details_Template.xlsx");
-                        String? url="https://docs.google.com/spreadsheets/d/1UwUyUrR54PHryfs63IIxpfJUdhcOQ_sE/edit?usp=sharing&ouid=104110574911029818653&rtpof=true&sd=true";
-                        if(await canLaunchUrlString(url)){
+                        String? url =
+                            "https://docs.google.com/spreadsheets/d/1UwUyUrR54PHryfs63IIxpfJUdhcOQ_sE/edit?usp=sharing&ouid=104110574911029818653&rtpof=true&sd=true";
+                        if (await canLaunchUrlString(url)) {
                           await launchUrlString(url);
-                        }else{
+                        } else {
                           print("can't launch url");
                         }
                       },
@@ -133,21 +149,21 @@ class _NewSessionState extends State<NewSession> {
                         color: Colors.orange,
                         child: const Center(
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Text(
-                                  "Student Details",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w900),
-                                ),
-                                Icon(
-                                  Icons.download,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(
+                              "Student Details",
+                              style: TextStyle(
+                                  fontSize: 12,
                                   color: Colors.white,
-                                ),
-                              ],
-                            )),
+                                  fontWeight: FontWeight.w900),
+                            ),
+                            Icon(
+                              Icons.download,
+                              color: Colors.white,
+                            ),
+                          ],
+                        )),
                       ),
                     ),
                   ),
@@ -155,14 +171,16 @@ class _NewSessionState extends State<NewSession> {
                     width: 120,
                     height: 100,
                     child: InkWell(
-                      onTap: () async{
-                        final String? stotagePath=dotenv.env["STORAGE_PATH_Routine_Template"];
+                      onTap: () async {
+                        final String? stotagePath =
+                            dotenv.env["STORAGE_PATH_Routine_Template"];
                         print("Download Routine record clicked");
-                        StorageController _controller=StorageController();
-                        String? url=await _controller.downloadTemplate(stotagePath!,"Routine_Template.xlsx");
-                        if(await canLaunchUrlString(url!)){
+                        StorageController _controller = StorageController();
+                        String? url = await _controller.downloadTemplate(
+                            stotagePath!, "Routine_Template.xlsx");
+                        if (await canLaunchUrlString(url!)) {
                           await launchUrlString(url);
-                        }else{
+                        } else {
                           print("can't launch url");
                         }
                       },
@@ -173,25 +191,24 @@ class _NewSessionState extends State<NewSession> {
                         color: Colors.green[600],
                         child: const Center(
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Text(
-                                  "Time Table",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w900),
-                                ),
-                                Icon(
-                                  Icons.download,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(
+                              "Time Table",
+                              style: TextStyle(
+                                  fontSize: 12,
                                   color: Colors.white,
-                                ),
-                              ],
-                            )),
+                                  fontWeight: FontWeight.w900),
+                            ),
+                            Icon(
+                              Icons.download,
+                              color: Colors.white,
+                            ),
+                          ],
+                        )),
                       ),
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -237,14 +254,17 @@ class _NewSessionState extends State<NewSession> {
                         width: MediaQuery.of(context).size.width * 0.4,
                         child: DropdownButton<String>(
                           value: selectedBranch,
-                          hint: Text("Select Branch"), // Displays if selectedBranch is null
+                          hint: Text(
+                              "Select Branch"), // Displays if selectedBranch is null
                           onChanged: (String? newVal) {
                             setState(() {
-                              selectedBranch = newVal; // Updates the selected value
+                              selectedBranch =
+                                  newVal; // Updates the selected value
                               print("Selected Branch: $selectedBranch");
                             });
                           },
-                          items: branchList.map<DropdownMenuItem<String>>((String value) {
+                          items: branchList
+                              .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -259,14 +279,17 @@ class _NewSessionState extends State<NewSession> {
                         width: MediaQuery.of(context).size.width * 0.4,
                         child: DropdownButton<String>(
                           value: selectedSection,
-                          hint: Text("(default if N.A)"), // Displays if selectedBranch is null
+                          hint: Text(
+                              "(default if N.A)"), // Displays if selectedBranch is null
                           onChanged: (String? newVal) {
                             setState(() {
-                              selectedSection = newVal!; // Updates the selected value
+                              selectedSection =
+                                  newVal!; // Updates the selected value
                               print("Selected Section: $selectedSection");
                             });
                           },
-                          items: sectionList.map<DropdownMenuItem<String>>((String value) {
+                          items: sectionList
+                              .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -283,14 +306,16 @@ class _NewSessionState extends State<NewSession> {
                     width: MediaQuery.of(context).size.width * 0.4,
                     child: DropdownButton<String>(
                       value: selectedSem,
-                      hint: Text("Select Semester"), // Displays if selectedBranch is null
+                      hint: Text(
+                          "Select Semester"), // Displays if selectedBranch is null
                       onChanged: (String? newVal) {
                         setState(() {
                           selectedSem = newVal; // Updates the selected value
                           print("Selected Semester: $selectedSem");
                         });
                       },
-                      items: semList.map<DropdownMenuItem<String>>((String value) {
+                      items:
+                          semList.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
@@ -341,7 +366,7 @@ class _NewSessionState extends State<NewSession> {
                     'Student Records: ${selectedStudentDocFile != null ? selectedStudentDocFile!.split('/').last : 'No File Selected'}',
                   ),
                   leading: Icon(Icons.attach_file),
-                  onTap: ()async{
+                  onTap: () async {
                     await _pickFile(selectedStudentDocFile);
                   },
                 ),
@@ -356,39 +381,72 @@ class _NewSessionState extends State<NewSession> {
                     'Routine Records: ${selectedRoutineDocFile != null ? selectedRoutineDocFile!.split('/').last : 'No File Selected'}',
                   ),
                   leading: Icon(Icons.attach_file),
-                  onTap: ()async{
+                  onTap: () async {
                     await _pickFile(selectedRoutineDocFile);
                   },
                 ),
               ),
             ),
-            ElevatedButton(onPressed: ()async{
-              //Upload doc to storage
-              StorageController storageController=StorageController();
-              String? studentRecordFileName=selectedStudentDocFile!.split('/').last;
-              String? routineRecordFileName=selectedRoutineDocFile!.split('/').last;
-              await storageController.uploadDocument(selectedBranch, selectedSem, selectedSection, studentRecordFileName, studentRecordFile);
-              await storageController.uploadDocument(selectedBranch, selectedSem, selectedSection, routineRecordFileName, routineRecordFile);
+            ElevatedButton(
+                onPressed: () async {
+                  final AuthController _authController = AuthController();
+                  //Upload doc to storage
+                  StorageController storageController = StorageController();
+                  String? studentRecordFileName =
+                      selectedStudentDocFile!.split('/').last;
+                  String? routineRecordFileName =
+                      selectedRoutineDocFile!.split('/').last;
+                  await storageController.uploadDocument(
+                      selectedBranch,
+                      selectedSem,
+                      selectedSection,
+                      studentRecordFileName,
+                      studentRecordFile);
+                  await storageController.uploadDocument(
+                      selectedBranch,
+                      selectedSem,
+                      selectedSection,
+                      routineRecordFileName,
+                      routineRecordFile);
 
-              //Convert Excel to firebase Doc and then upload
-              ExcelFileHandlerServices excelHandler=ExcelFileHandlerServices();
-              List<Object> studentObject=await excelHandler.extractUserAuthDetail(studentRecordFile,"users");
-              //add student record firestore database
-              String studentPath=studentObject[0] as String;
-              DatabaseServices studentRef=DatabaseServices(studentPath);
-              studentRef.addUser(studentObject[1] as AppUser);
-              // print(studentPath);
-              String? year=findYear(selectedSem);
-              Map<String, dynamic> routineObject=await excelHandler.extractTimetable(routineRecordFile,year!,selectedSection!);
-              String routinePath="degrees/$selectedBranch/$year/$selectedSection/routine";
-              DatabaseServices _routineRef=DatabaseServices(routinePath);
-              _routineRef.createDegreeTimetable(selectedBranch!,year,selectedSection!,routineObject);
-              // print(routineObject);
-            }, child: Text("Submit"))
+                  //Convert Excel to firebase Doc and then upload
+                  ExcelFileHandlerServices excelHandler =
+                      ExcelFileHandlerServices();
+                  //returns [path, appUser]
+                  List<Object> studentObject = await excelHandler
+                      .extractUserAuthDetail(studentRecordFile, "users");
+                  // print("Student Object: ${studentObject.toString()}");
+
+                  //add student record firestore database
+                  String studentPath = studentObject[0] as String;
+                  DatabaseServices studentRef = DatabaseServices(studentPath);
+                  List<AppUser> users = studentObject[1] as List<AppUser>;
+                  for (var user in users) {
+                    String email=user.universityEmailId;
+                    String pass=user.dob;
+                    print("User: ${email} $pass");
+                    String? uid=await _authController.newAuthForUser( email,pass);
+                    if(uid!=null){
+                      studentRef.addUser(user, uid);
+                    }
+                  }
+
+                  String? year = findYear(selectedSem);
+                  Map<String, dynamic> routineObject =
+                      await excelHandler.extractTimetable(
+                          routineRecordFile, year!, selectedSection!);
+                  String routinePath =
+                      "degrees/$selectedBranch/$year/$selectedSection/routine";
+                  DatabaseServices _routineRef = DatabaseServices(routinePath);
+                  _routineRef.createDegreeTimetable(selectedBranch!,year,selectedSection!,routineObject);
+                  // print(routineObject);
+
+                  // print(studentPath);
+                },
+                child: Text("Submit"))
           ],
         ),
       ),
     );
   }
 }
-

@@ -17,6 +17,7 @@ class ExcelFileHandlerServices {
   final AuthController _authController = AuthController();
   //Handling excel of Student Details
   Future<List<Object>> extractUserAuthDetail(File file, String endPoint) async {
+    List<AppUser> users=[];
     // FilePickerResult? result = await FilePicker.platform.pickFiles(
     //   type: FileType.custom,
     //   allowedExtensions: ['xlsx'],
@@ -52,8 +53,8 @@ class ExcelFileHandlerServices {
               print(extractedDate);
               // DateTime parsedDate = DateTime.parse("2023-11-14")
               DateTime parsedDate =
-                  DateFormat("dd/MM/yyyy").parse(extractedDate);
-              print(parsedDate);
+                  DateFormat("dd-MM-yyyy").parse(extractedDate);
+              print("parsedDate $parsedDate");
               String formattedDate = DateFormat('dd-MM-yyyy')
                   .format(parsedDate)
                   .replaceAll("-", "");
@@ -62,42 +63,44 @@ class ExcelFileHandlerServices {
               rowMap[headers[colIndex]] = cellValue;
             }
           }
+          AppUser appUser = AppUser(
+              name: rowMap['Name'].toString(),
+              mobileNo: rowMap['Mobile Number'].toString(),
+              universityRoll: rowMap['University Roll Number'].toString(),
+              universityEmailId: rowMap['University Email'].toString(),
+              admissionNo: rowMap['Admission Number'].toString(),
+              personalEmail: rowMap['Personal Email'].toString(),
+              dob: rowMap['DOB'],
+              currentSemester: 1,
+              isVerified: false,
+              createdBy: "admin",
+              role: rowMap['Role'].toString(),
+              createdOn: Timestamp.now(),
+              routine: null);
+          // routine: {'AI':Routine(absent: 0,attended: 0,total: 0)}
+          users.add(appUser);
+
         }
-        print("ROW MAP== $rowMap");
+        // print("ROW MAP== ${rowMap}");
         // setAuthForStudent.add(rowMap);
         //Creating auth(email,pass) for new user
         // await _authController.newAuthForUser( rowMap['University Email'].toString(), rowMap['DOB'].toString());
         // print("USER: ${FirebaseAuth.instance.currentUser?.uid} ");
         // String uid = "${FirebaseAuth.instance.currentUser?.uid}";
         // final adminUID = await UserSecureStorage.getUserUID();
-        AppUser appUser = AppUser(
-            name: rowMap['Name'].toString(),
-            mobileNo: rowMap['Mobile Number'].toString(),
-            universityRoll: rowMap['University Roll Number'].toString(),
-            universityEmailId: rowMap['University Email'].toString(),
-            admissionNo: rowMap['Admission Number'].toString(),
-            personalEmail: rowMap['Personal Email'].toString(),
-            dob: rowMap['DOB'],
-            // currentSemester: rowMap['Semester'],
-            currentSemester: 1,
-            isVerified: false,
-            createdBy: "admin",
-            role: rowMap['Role'].toString(),
-            createdOn: Timestamp.now(),
-            routine: null);
-        // routine: {'AI':Routine(absent: 0,attended: 0,total: 0)}
+        print("APP USER DATA:-----------------${users.length}");
         //Add user after creating auth
         path =
             "degrees/${rowMap['Branch'].toString()}/${rowMap['Year'].toString()}-Year/Sec-${rowMap['Section'].toString()}/$endPoint";
         // DatabaseServices _databaseRef=DatabaseServices(path);
         // await _databaseRef.addUser(appUser);
-        print("APP USER DATA:-----------------${appUser.toJson()}");
+
         //   // print(rowMap['dob']);
         // }
         // print(setAuthForStudent);
         //List of Student objects
 
-        return [path, appUser];
+        return [path, users];
       }
     }
     return [
@@ -189,7 +192,7 @@ class ExcelFileHandlerServices {
             String key = timeSlot[colIndex - 1];
             String? subj = subjCodeDetails[subCode]?["Subject"];
             String? faculty = subjCodeDetails[subCode]?["Faculty"];
-            print("key ${key} ,subCode ${subCode},faculty ${faculty} ");
+            // print("key ${key} ,subCode ${subCode},faculty ${faculty} ");
             // addSlot(key, subCode, subj, faculty);
             daySlots.add({
               "time": key,
@@ -208,7 +211,7 @@ class ExcelFileHandlerServices {
         }
       }
     }
-    print("Timetable====>:$timetable");
+    // print("Timetable====>:$timetable");
     return timetable;
   }
 }
