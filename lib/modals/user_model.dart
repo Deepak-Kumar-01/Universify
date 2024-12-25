@@ -31,28 +31,30 @@ class AppUser {
     required this.routine,
   });
 
-  // Factory method to create a Student object from a JSON map (for Firestore)
+  // Factory method to create an AppUser object from a JSON map (for Firestore)
   factory AppUser.fromJson(Map<String, dynamic> json) {
     return AppUser(
-      name: json['name'] as String,
-      mobileNo: (json['mobileNo'] as num).toString(),
-      dob: json['dob'] as String,
-      universityRoll: (json['universityRoll'] as num).toString(),
-      admissionNo: json['admissionNo'] as String,
-      universityEmailId: json['universityEmailId'] as String,
-      personalEmail: json['personalEmail'] as String,
-      currentSemester: json['currentSemester'] as int,
-      isVerified: json['isVerified'] as bool,
-      createdBy: json['createdBy'] as String,
-      role: json['role'] as String,
-      createdOn: (json['createdOn'] as Timestamp),
-      routine: (json['routine'] as Map<String, dynamic>).map(
-            (key, value) => MapEntry(key, Routine.fromJson(value)),
+      name: json['name'] as String? ?? '',
+      mobileNo: (json['mobileNo'] ?? '').toString(),
+      dob: json['dob'] as String? ?? '',
+      universityRoll: (json['universityRoll'] ?? '').toString(),
+      admissionNo: json['admissionNo'] as String? ?? '',
+      universityEmailId: json['universityEmailId'] as String? ?? '',
+      personalEmail: json['personalEmail'] as String? ?? '',
+      currentSemester: json['currentSemester'] is int
+          ? json['currentSemester'] as int
+          : int.tryParse(json['currentSemester']?.toString() ?? '') ?? 0,
+      isVerified: json['isVerified'] as bool? ?? false,
+      createdBy: json['createdBy'] as String? ?? '',
+      role: json['role'] as String? ?? '',
+      createdOn: json['createdOn'] as Timestamp? ?? Timestamp.now(),
+      routine: (json['routine'] as Map<String, dynamic>?)?.map(
+            (key, value) => MapEntry(key, Routine.fromJson(value as Map<String, dynamic>)),
       ),
     );
   }
 
-  // Method to convert a Student object to a JSON map (for Firestore)
+  // Method to convert an AppUser object to a JSON map (for Firestore)
   Map<String, dynamic> toJson() {
     return {
       'name': name,
@@ -86,9 +88,15 @@ class Routine {
   // Factory method to create a Routine object from a JSON map
   factory Routine.fromJson(Map<String, dynamic> json) {
     return Routine(
-      attended: json['attended'] as int,
-      total: json['total'] as int,
-      absent: json['absent'] as int,
+      attended: json['attended'] is int
+          ? json['attended'] as int
+          : int.tryParse(json['attended']?.toString() ?? '') ?? 0,
+      total: json['total'] is int
+          ? json['total'] as int
+          : int.tryParse(json['total']?.toString() ?? '') ?? 0,
+      absent: json['absent'] is int
+          ? json['absent'] as int
+          : int.tryParse(json['absent']?.toString() ?? '') ?? 0,
     );
   }
 

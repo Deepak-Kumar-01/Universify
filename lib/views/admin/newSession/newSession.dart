@@ -419,31 +419,34 @@ class _NewSessionState extends State<NewSession> {
 
                   //add student record firestore database
                   String studentPath = studentObject[0] as String;
-                  DatabaseServices studentRef = DatabaseServices(studentPath);
+                  // DatabaseServices studentRef = DatabaseServices(studentPath.toLowerCase());
+                  DatabaseServices studentRef = DatabaseServices("users");
                   List<AppUser> users = studentObject[1] as List<AppUser>;
                   for (var user in users) {
                     String email=user.universityEmailId;
-                    String pass=user.dob;
-                    print("User: ${email} $pass");
-                    String? uid=await _authController.newAuthForUser( email,pass);
-                    if(uid!=null){
-                      studentRef.addUser(user, uid);
-                    }
+                    // String pass=user.dob;
+                    // print("User: ${email} $pass");
+                    // String? uid=await _authController.newAuthForUser( email,pass);
+                    // if(uid!=null){
+                    //   studentRef.addUser(user, uid);
+                    // }
                   }
 
                   String? year = findYear(selectedSem);
-                  Map<String, dynamic> routineObject =
+                  List<Map<String, dynamic>> routineObjectList =
                       await excelHandler.extractTimetable(
                           routineRecordFile, year!, selectedSection!);
+                  print("subject code: ${routineObjectList.last}");
                   String routinePath =
                       "degrees/$selectedBranch/$year/$selectedSection/routine";
+                  String facultyPath =
+                      "degrees/$selectedBranch/$year/$selectedSection/faculty";
                   DatabaseServices _routineRef = DatabaseServices(routinePath);
-                  _routineRef.createDegreeTimetable(selectedBranch!,year,selectedSection!,routineObject);
-                  // print(routineObject);
-
-                  // print(studentPath);
+                  DatabaseServices _facultyRef=DatabaseServices(facultyPath);
+                  // _routineRef.createDegreeTimetable(selectedBranch!,year,selectedSection!,routineObjectList.first);
+                  _facultyRef.createFacultyList(selectedBranch!,year,selectedSection!,routineObjectList.last);
                 },
-                child: Text("Submit"))
+                child: const Text("Submit"))
           ],
         ),
       ),

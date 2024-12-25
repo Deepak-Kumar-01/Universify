@@ -128,7 +128,7 @@ class ExcelFileHandlerServices {
   List<String> days = ["MON", "TUE", "WED", "THRU", "FRI", "SAT"];
   // ----------------------------------------------------------------------------
   //Handling Routine
-  Future<Map<String, dynamic>> extractTimetable(
+  Future<List<Map<String, dynamic>>> extractTimetable(
       File routine, String year, String section) async {
     print("Inside extractTimetable");
     //initializing timetable
@@ -212,7 +212,8 @@ class ExcelFileHandlerServices {
       }
     }
     // print("Timetable====>:$timetable");
-    return timetable;
+    return [timetable,subjCodeDetails];
   }
+
 }
 
